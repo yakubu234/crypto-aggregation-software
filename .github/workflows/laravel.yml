@@ -48,7 +48,7 @@ jobs:
       - name: Generate key
         run: php artisan key:generate
       - name: Clear vendor directory
-        run: php artisan install:api -o
+        run: php artisan install:api 
       - name: Directory Permissions
         run: chmod -R 777 storage bootstrap/cache
       - name: Regenerate Autoload Files
