@@ -20,6 +20,8 @@ jobs:
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
       - name: remove laravel/sanctum
         run: composer remove laravel/sanctum -q --no-ansi --no-interaction --no-scripts --no-progress 
+      - name: Regenerate Autoload Files
+        run: composer dump-autoload
       - name: Install Dependencies  
         run: composer require laravel/sanctum:* -q --no-ansi --no-interaction --no-scripts --no-progress 
       - name: Install Dependencies  
@@ -53,6 +55,8 @@ jobs:
         run: |
           npm install
           npm run build
+      - name: Run Migrations
+        run: php artisan migrate --database=sqlite
       - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
         env:
           DB_CONNECTION: sqlite
