@@ -22,6 +22,8 @@ jobs:
         run: composer remove laravel/sanctum -q --no-ansi --no-interaction --no-scripts --no-progress 
       - name: Install Dependencies  
         run: composer require laravel/sanctum:* -q --no-ansi --no-interaction --no-scripts --no-progress  
+      - name: Clear Configs  
+        run: php artisan optimize:clear 
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Generate key
