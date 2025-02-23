@@ -38,17 +38,13 @@ jobs:
       - name: remove laravel/sanctum
         run: composer remove laravel/sanctum -q --no-ansi --no-interaction --no-scripts --no-progress 
       - name: Clear vendor directory
-        run: rm -rf vendor
-      - name: Install Sanctum Dependencies
-        run: composer require laravel/sanctum:* -q --no-ansi --no-interaction --no-scripts --no-progress 
+        run: rm -rf vendor 
       - name: Update Dependencies
         run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress 
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Generate key
         run: php artisan key:generate
-      - name: Clear vendor directory
-        run: php artisan install:api 
       - name: Directory Permissions
         run: chmod -R 777 storage bootstrap/cache
       - name: Regenerate Autoload Files
