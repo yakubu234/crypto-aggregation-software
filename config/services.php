@@ -34,5 +34,6 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'crypto_fetch_interval' => env('CRYPTO_FETCH_INTERVAL', '60'),
 
 ];
