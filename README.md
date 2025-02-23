@@ -191,6 +191,17 @@ php artisan serve
 npm run dev
 ```
 
+## Running the Application
+You can as well run the commands as a one liner by getting into theroot directory of the project and type:
+
+```sh
+#  from the terminal
+./start-services.sh
+
+# or this 
+bash start-services.sh
+```
+
 ## API Endpoints
 ### Fetch Cryptocurrency Prices (REST API)
 **Endpoint:**
