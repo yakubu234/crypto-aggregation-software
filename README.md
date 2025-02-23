@@ -321,6 +321,7 @@ sudo supervisorctl start laravel-schedule:*
 Developed by Yakubu Abiola
 
 ## a setup of this project to a cloud server will be available soones. once completed, the url will be added here for testing.
+## The docker is not fully functional yet.
 
 ## License
 This project is licensed under the MIT License.
