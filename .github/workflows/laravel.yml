@@ -39,8 +39,6 @@ jobs:
         run: composer remove laravel/sanctum -q --no-ansi --no-interaction --no-scripts --no-progress 
       - name: Clear vendor directory
         run: rm -rf vendor
-      - name: Clear vendor directory
-        run: php artisan install:api
       - name: Install Sanctum Dependencies
         run: composer require laravel/sanctum:* -q --no-ansi --no-interaction --no-scripts --no-progress 
       - name: Update Dependencies
