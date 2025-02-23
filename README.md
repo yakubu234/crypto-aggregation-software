@@ -1,66 +1,315 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Cryptocurrency Price Aggregator
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
+This project implements a cryptocurrency price aggregation system using Laravel, Laravel Queue (Redis), Supervisor, WebSockets (Laravel Reverb), and Laravel LiveWire. The system fetches cryptocurrency prices from multiple exchanges, computes the average price, stores the results in a database, and broadcasts the updates in real time via WebSockets.
 
-## About Laravel
+## Features
+- Configurable cryptocurrency pairs and exchanges.
+- Fetches price data in parallel from multiple exchanges.
+- Stores price data in the database and caches results.
+- Provides a REST API to retrieve the last known cryptocurrency prices.
+- WebSocket API for real-time updates.
+- Laravel LiveWire frontend to display price data with live updates.
+- Implements SOLID principles and unit tests.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Prerequisites
+Ensure you have the following installed:
+- **PHP 8.3+**
+- **Composer**
+- **Laravel 11**
+- **Redis**
+- **Node.js & NPM**
+- **Supervisor** (for managing queue workers)
+- **Database** (MySQL, PostgreSQL, or SQLite)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Packages Used
+the following packages are implemented in this project:
+- **Laravel Horizon for serving and managing queuue+**
+- **Laravel Reverb for realtime communitcation**
+- **Laravel Echo . the WS connection at the front end**
+- **Livewire. a template engine**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Installation
+Clone the repository and install dependencies:
 
-## Learning Laravel
+```sh
+# Clone the repository
+git clone https://github.com/your-repository.git
+cd your-repository
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# Install PHP dependencies
+composer install
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+# Install JavaScript dependencies
+npm install && npm run dev
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Copy and configure environment variables
+cp .env.example .env
 
-## Laravel Sponsors
+# Generate application key
+php artisan key:generate
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Configuration
+Edit the `.env` file and set up the following configurations: change only the database setting and also update `CRYPTO_API_KEY` to your API key. 
 
-### Premium Partners
+```ini
+# Database Configuration
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=root
+DB_PASSWORD=
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=base64:+N2vngdqHagMxvm0+wEtqnMJ0b5XuTBziaK3zNKc4vE=
+APP_DEBUG=true
+APP_TIMEZONE=UTC
+APP_URL=http://localhost
 
-## Contributing
+APP_LOCALE=en
+APP_FALLBACK_LOCALE=en
+APP_FAKER_LOCALE=en_US
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+APP_MAINTENANCE_DRIVER=file
+# APP_MAINTENANCE_STORE=database
 
-## Code of Conduct
+PHP_CLI_SERVER_WORKERS=4
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+BCRYPT_ROUNDS=12
 
-## Security Vulnerabilities
+LOG_CHANNEL=daily
+LOG_STACK=single
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=debug
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+
+SESSION_LIFETIME=120
+SESSION_ENCRYPT=false
+SESSION_PATH=/
+SESSION_DOMAIN=null
+
+# Broadcating driver
+BROADCAST_CONNECTION=reverb
+BROADCAST_DRIVER=reverb
+
+FILESYSTEM_DISK=local
+
+CACHE_STORE=database
+CACHE_PREFIX=
+
+HORIZON_DOMAIN=localhost
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+
+MEMCACHED_HOST=127.0.0.1
+
+#higly recommemded to use same setting as below
+REDIS_CLIENT=phpredis
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+REVERB_PORT=8080
+REVERB_HOST=127.0.0.1
+REVERB_SCHEME=http
+REVERB_APP_ID=510578
+REVERB_APP_KEY=qhxbwgflshg1ufehgtt6
+REVERB_APP_SECRET=r4ejeattunzkaggtph9e
+
+CRYPTO_EXCHANGES=binance,mexc,kucoin,huobi,bybit
+CRYPTO_PAIRS=BTC,ETH,ETHBTC,BTCUSDT,XRPBTC
+CRYPTO_FETCH_INTERVAL=60
+CRYPTO_API_KEY=3htbhru459te9ivgi959ure9
+CRYPTO_API_URL=https://api.freecryptoapi.com/v1/getData
+
+MAIL_MAILER=log
+MAIL_SCHEME=null
+MAIL_HOST=127.0.0.1
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+AWS_USE_PATH_STYLE_ENDPOINT=false
+
+VITE_APP_NAME="${APP_NAME}"
+
+VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"
+VITE_REVERB_HOST="${REVERB_HOST}"
+VITE_REVERB_PORT="${REVERB_PORT}"
+VITE_REVERB_SCHEME="${REVERB_SCHEME}"
+```
+
+### Exchange & Fetch Interval Configuration
+Modify `config/exchange.php` to specify cryptocurrency pairs, exchanges, and API details:
+
+```php
+return [
+    'pairs' => [
+        'list' => ['BTCUSDC', 'BTCUSDT', 'BTCETH'],
+    ],
+    'exchange' => [
+        'list' => ['binance', 'mexc', 'huobi'],
+    ],
+    'url' => env('CRYPTO_API_URL', 'https://crypto-api.example.com'),
+    'api_key' => env('CRYPTO_API_KEY'),
+];
+```
+
+## Database Migration
+Run migrations to set up database tables:
+
+```sh
+php artisan migrate
+```
+
+## Running the Application
+Start the necessary services in separate terminal sessions:
+
+```sh
+# Start WebSocket Server
+php artisan reverb:start
+
+# Start Queue Worker
+php artisan horizon:start
+
+# Start Schedule Worker
+php artisan  schedule:work
+# Start Laravel Server
+php artisan serve
+
+# Start Webpack for LiveWire
+npm run dev
+```
+
+## API Endpoints
+### Fetch Cryptocurrency Prices (REST API)
+**Endpoint:**
+```http
+GET /api/crypto-prices
+```
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": [
+        {
+            "symbol": "BTCUSDT",
+            "averagePrice": 45000.25,
+            "priceChange": 2.5,
+            "exchanges": ["binance", "mexc"],
+            "serverTime": "2025-02-23 12:34:56"
+        }
+    ]
+}
+```
+
+## WebSocket Events
+The WebSocket broadcasts cryptocurrency price updates on the `crypto-prices` channel.
+
+**Event:**
+```json
+{
+    "event": "CryptoPriceUpdated",
+    "data": {
+        "crypto": {
+            "BTCUSDT": {
+                "averagePrice": 45000.25,
+                "priceChange": 2.5,
+                "exchanges": ["binance", "mexc"],
+                "serverTime": "2025-02-23 12:34:56"
+            }
+        }
+    }
+}
+```
+
+## Running Tests
+### Unit & Feature Tests
+Ensure Redis and your database are running before executing tests.
+
+```sh
+php artisan test
+```
+
+### Queue & WebSocket Testing
+1. Dispatch a test job manually:
+
+   ```sh
+   php artisan horizon:start
+   ```
+
+2. Listen for WebSocket events:
+
+   ```sh
+   php artisan reverb:work --debug
+   ```
+
+## Deployment Notes
+Kindly note that for better performances, it is encouraged to setup a supervisor for the backgroup processess, the configs below are list of the background tasks. 
+
+- Use **Supervisor** to manage queue workers in production.
+- Set up **Redis** for queue and cache management.
+- Configure **NGINX/Apache** for Laravel and WebSocket proxying.
+
+### Supervisor Configuration Example for horizon
+Create a configuration file `/etc/supervisor/conf.d/laravel-horizon.conf`:
+
+```ini
+[program:laravel-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/artisan horizon
+autostart=true
+autorestart=true
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/www/storage/logs/horizon.log
+```
+
+Restart Supervisor:
+
+```sh
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start laravel-horizon:*
+```
+
+
+### Supervisor Configuration Example for scheduler
+Create a configuration file `/etc/supervisor/conf.d/laravel-schedule.conf`:
+
+```ini
+[program:laravel-scheduler]
+process_name=%(program_name)s
+command=php /var/www/artisan schedule:work
+autostart=true
+autorestart=true
+user=your_user
+stderr_logfile=/var/www/storage/logs/supervisor-scheduler.err.log
+stdout_logfile=/var/www/storage/logs/supervisor-scheduler.out.log
+```
+
+Restart Supervisor:
+
+```sh
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start laravel-schedule:*
+```
+## Author
+Developed by Yakubu Abiola
+
+## a setup of this project to a cloud server will be available soones. once completed, the url will be added here for testing.
 
 ## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License.
