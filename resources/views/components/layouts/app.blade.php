@@ -5,7 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <title>{{ $title ?? 'Page Title' }}</title>
-        @vite(['resources/js/app.js','resources/css/app.css'])
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
+        
         <!-- Example using CDN in your main blade layout -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link
@@ -25,7 +27,7 @@
     </head>
     <body>
         {{ $slot }}
-
+        @livewireScripts    
         @include('components.layouts.scripts')  {{-- Extracted Scripts --}}
     <!-- Bootstrap JS (if needed for dropdowns, etc.) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

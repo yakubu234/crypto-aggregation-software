@@ -4,7 +4,7 @@ echo "Starting WebSocket Server..."
 php artisan reverb:start &
 
 echo "Starting Queue Worker..."
-php artisan horizon:start &
+php artisan horizon &
 
 echo "Starting Schedule Worker..."
 php artisan schedule:work &

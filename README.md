@@ -2,7 +2,7 @@
 
 ## Overview
 This project implements a cryptocurrency price aggregation system using Laravel, Laravel Queue (Redis), Supervisor, WebSockets (Laravel Reverb), and Laravel LiveWire. The system fetches cryptocurrency prices from multiple exchanges, computes the average price, stores the results in a database, and broadcasts the updates in real time via WebSockets.
-
+## Good news; The docker is now fully functional. (:
 ## Features
 - Configurable cryptocurrency pairs and exchanges.
 - Fetches price data in parallel from multiple exchanges.
@@ -51,10 +51,10 @@ php artisan key:generate
 ```
 
 ## Configuration
-Edit the `.env` file and set up the following configurations: change only the database setting and also update `CRYPTO_API_KEY` to your API key. 
+Edit the `.env` file and set up the following configurations: you can make changes as you like: NB: if you are to run it on docker, make the changes in .docker-env 
 
 ```ini
-# Database Configuration
+# Database Configuration setup required. you can make changes as you like.
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -62,35 +62,7 @@ DB_DATABASE=laravel
 DB_USERNAME=root
 DB_PASSWORD=
 
-APP_NAME=Laravel
-APP_ENV=local
-APP_KEY=base64:+N2vngdqHagMxvm0+wEtqnMJ0b5XuTBziaK3zNKc4vE=
-APP_DEBUG=true
-APP_TIMEZONE=UTC
-APP_URL=http://localhost
-
-APP_LOCALE=en
-APP_FALLBACK_LOCALE=en
-APP_FAKER_LOCALE=en_US
-
-APP_MAINTENANCE_DRIVER=file
-# APP_MAINTENANCE_STORE=database
-
-PHP_CLI_SERVER_WORKERS=4
-
-BCRYPT_ROUNDS=12
-
-LOG_CHANNEL=daily
-LOG_STACK=single
-LOG_DEPRECATIONS_CHANNEL=null
-LOG_LEVEL=debug
-
-
-SESSION_LIFETIME=120
-SESSION_ENCRYPT=false
-SESSION_PATH=/
-SESSION_DOMAIN=null
-
+#higly recommemded to use same setting as below
 # Broadcating driver
 BROADCAST_CONNECTION=reverb
 BROADCAST_DRIVER=reverb
@@ -107,7 +79,6 @@ QUEUE_CONNECTION=redis
 
 MEMCACHED_HOST=127.0.0.1
 
-#higly recommemded to use same setting as below
 REDIS_CLIENT=phpredis
 REDIS_HOST=127.0.0.1
 REDIS_PASSWORD=null
@@ -120,33 +91,11 @@ REVERB_APP_ID=510578
 REVERB_APP_KEY=qhxbwgflshg1ufehgtt6
 REVERB_APP_SECRET=r4ejeattunzkaggtph9e
 
-CRYPTO_EXCHANGES=binance,mexc,kucoin,huobi,bybit
-CRYPTO_PAIRS=BTC,ETH,ETHBTC,BTCUSDT,XRPBTC
-CRYPTO_FETCH_INTERVAL=60
-CRYPTO_API_KEY=3htbhru459te9ivgi959ure9
+CRYPTO_EXCHANGES=binance,mexc,kucoin,huobi,bybit #exchanges
+CRYPTO_PAIRS=BTC,ETH,ETHBTC,BTCUSDT,XRPBTC #pairs
+CRYPTO_FETCH_INTERVAL=60 #time interval for fetching ; i.e 60 seconds
+CRYPTO_API_KEY=3htbhru459te9ivgi959ure9 #free crypto api API KEY
 CRYPTO_API_URL=https://api.freecryptoapi.com/v1/getData
-
-MAIL_MAILER=log
-MAIL_SCHEME=null
-MAIL_HOST=127.0.0.1
-MAIL_PORT=2525
-MAIL_USERNAME=null
-MAIL_PASSWORD=null
-MAIL_FROM_ADDRESS="hello@example.com"
-MAIL_FROM_NAME="${APP_NAME}"
-
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_DEFAULT_REGION=us-east-1
-AWS_BUCKET=
-AWS_USE_PATH_STYLE_ENDPOINT=false
-
-VITE_APP_NAME="${APP_NAME}"
-
-VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"
-VITE_REVERB_HOST="${REVERB_HOST}"
-VITE_REVERB_PORT="${REVERB_PORT}"
-VITE_REVERB_SCHEME="${REVERB_SCHEME}"
 ```
 
 ### Exchange & Fetch Interval Configuration
@@ -172,7 +121,7 @@ Run migrations to set up database tables:
 php artisan migrate
 ```
 
-## Running the Application
+## Running the Application without docker
 Start the necessary services in separate terminal sessions:
 
 ```sh
@@ -189,6 +138,20 @@ php artisan serve
 
 # Start Webpack for LiveWire
 npm run dev
+```
+
+## Running the Application with Docker
+cd into the project root directory:
+
+```sh
+# build the images
+please ensure you .env varriables are set. refer to the section before this to learn more on env settings.
+
+# build the images
+docker compose build
+
+# Start the application
+docker compose up
 ```
 
 ## Running the Application
@@ -277,13 +240,12 @@ Kindly note that for better performances, it is encouraged to setup a supervisor
 Create a configuration file `/etc/supervisor/conf.d/laravel-horizon.conf`:
 
 ```ini
-[program:laravel-worker]
-process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/artisan horizon
+[program:laravel-horizon]
+command=php artisan horizon
+directory=/var/www
 autostart=true
 autorestart=true
-numprocs=1
-redirect_stderr=true
+stderr_logfile=/var/www/storage/logs/horizon.log
 stdout_logfile=/var/www/storage/logs/horizon.log
 ```
 
@@ -301,13 +263,12 @@ Create a configuration file `/etc/supervisor/conf.d/laravel-schedule.conf`:
 
 ```ini
 [program:laravel-scheduler]
-process_name=%(program_name)s
-command=php /var/www/artisan schedule:work
+command=php artisan schedule:work
+directory=/var/www
 autostart=true
 autorestart=true
-user=your_user
-stderr_logfile=/var/www/storage/logs/supervisor-scheduler.err.log
-stdout_logfile=/var/www/storage/logs/supervisor-scheduler.out.log
+stderr_logfile=/var/www/storage/logs/schedule.log
+stdout_logfile=/var/www/storage/logs/schedule.log
 ```
 
 Restart Supervisor:
@@ -317,11 +278,33 @@ sudo supervisorctl reread
 sudo supervisorctl update
 sudo supervisorctl start laravel-schedule:*
 ```
+
+
+### Supervisor Configuration Example for reverb
+Create a configuration file `/etc/supervisor/conf.d/laravel-reverb.conf`:
+
+```ini
+[program:laravel-reverb]
+command=php artisan reverb:start --debug --host=0.0.0.0 --port=8080
+directory=/var/www
+autostart=true
+autorestart=true
+stderr_logfile=/var/www/storage/logs/reverb.log
+stdout_logfile=/var/www/storage/logs/reverb.log
+```
+
+Restart Supervisor:
+
+```sh
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start laravel-reverb:*
+```
 ## Author
 Developed by Yakubu Abiola
 
-## a setup of this project to a cloud server will be available soones. once completed, the url will be added here for testing.
-## The docker is not fully functional yet.
+## a setup of this project to a cloud server now available at http://crypto.aob.com.ng(http://crypto.aob.com.ng)
+
 
 ## License
 This project is licensed under the MIT License.
