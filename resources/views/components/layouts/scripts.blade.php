@@ -1,10 +1,10 @@
-@push('scripts')
 <script src = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" > </script> 
 <script >
    async function fetchInitialPrices() {
       try {
          let response = await fetch('/api/crypto-prices');
          let data = await response.json();
+         console.log('initial');
          if (data.status === "success") {
             // perform the data astore here
             updateUI(data.data);
@@ -126,7 +126,6 @@
 
     let retryAttempts = 0;
 
-    
     function connectWebSocket() {
         console.log("Attempting to connect WebSocket...");
 
@@ -156,20 +155,10 @@
 
     document.addEventListener("DOMContentLoaded", function () {
     fetchInitialPrices();
-    // connectWebSocket();
+    connectWebSocket();
     });
 
-    document.addEventListener('livewire:load', function () {
-        connectWebSocket();
-        
-        Livewire.hook('message.processed', (message, component) => {
-            connectWebSocket();
-        });
-    });
-
-    
     // Update the time every second.
     setInterval(updateLocalTime, 1000);
 
 </script>
-@endpush

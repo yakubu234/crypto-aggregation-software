@@ -129,7 +129,7 @@ Start the necessary services in separate terminal sessions:
 php artisan reverb:start
 
 # Start Queue Worker
-php artisan horizon:start
+php artisan horizon
 
 # Start Schedule Worker
 php artisan  schedule:work
@@ -152,10 +152,22 @@ docker compose build
 
 # Start the application
 docker compose up
+
+[OR]
+
+# Start the application in deamon mode
+docker compose up -d
+
+
+# Once the Application is up visit the url below on your browser
+http://localhost:8080
+
+# To stop the application
+docker compose down
 ```
 
 ## Running the Application
-You can as well run the commands as a one liner by getting into theroot directory of the project and type:
+You can as well run below commands as a one liner at the root directory of the project to stat all neccessary services :
 
 ```sh
 #  from the terminal

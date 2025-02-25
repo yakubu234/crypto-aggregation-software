@@ -4,7 +4,7 @@ APP_KEY=base64:oqQmJl1RrGS6aEOkr3hnyVrH5sZ5Z6QLbrudAyNEhos=
 APP_DEBUG=true
 APP_TIMEZONE=UTC
 APP_URL=http://localhost
-ASSET_URL=http://localhost:8000
+ASSET_URL=http://localhost:8080
 
 APP_LOCALE=en
 APP_FALLBACK_LOCALE=en

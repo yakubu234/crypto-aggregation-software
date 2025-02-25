@@ -5,10 +5,10 @@ import path from 'path';
 
 export default defineConfig({
     server: {
-        host: '0.0.0.0', // Or 'localhost' / '127.0.0.1'
+        host: '127.0.0.1', // Or 'localhost' / '127.0.0.1'
         port: 5173, // Or your preferred port
         hmr: {
-            host: '0.0.0.0', // Or your host if needed
+            host: '127.0.0.1', // Or your host if needed
         },
         watch: {
             usePolling: true, // Required for docker

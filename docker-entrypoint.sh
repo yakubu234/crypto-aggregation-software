@@ -19,7 +19,7 @@ fi
 
 # Run migrations and seed
 echo "Running migrations..."
-php artisan migrate --seed --force
+php artisan migrate --force
 
 # Ensure storage is linked
 php artisan storage:link || true
@@ -30,10 +30,21 @@ until mysqladmin ping -h"$DB_HOST" --silent; do
 done
 echo "MySQL is ready!"
 
+echo "Removing the hot folder in public directory"
+rm -f /var/www/public/hot
+
 # Start Supervisor to run Queue, Reverb, Scheduler
 echo "Starting Supervisor..."
 exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
 echo "Starting Laravel application..."
+
+# Final Notification
+echo "" # Newline for readability
+echo "----------------------------------------"
+echo -e "\n✅ Laravel application setup complete!"
+echo "You can now access your application at:"
+echo "http://localhost:8080" # Or your actual URL
+echo "----------------------------------------"
 
 

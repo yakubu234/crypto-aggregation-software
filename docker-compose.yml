@@ -64,8 +64,8 @@ services:
     container_name: laravel_nginx
     restart: unless-stopped
     ports:
-      - "8000:80"       # Host port 81 mapped to container's port 80 (default for Nginx)
-      - "8080:8080" # WebSocket for Reverb
+      # - "8000:80"       # Host port 81 mapped to container's port 80 (default for Nginx)
+      - "8080:80" # WebSocket for Reverb
       - "6001:6001" # Laravel Echo WebSocket
       - "3000:3000" # Vite dev server’s port on dev
       - '${VITE_PORT:-5173}:${VITE_PORT:-5173}' # Vite dev server’s port 
