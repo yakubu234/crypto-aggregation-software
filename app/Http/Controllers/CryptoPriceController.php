@@ -2,24 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CryptoPrice;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
+use App\Services\CryptoPriceService;
 
 class CryptoPriceController extends Controller
 {
-    
-    public function index(): JsonResponse
-    {
-        $interval = config('services.crypto_fetch_interval') ?? 60; // Default: 60 seconds; 
 
-        $cryptoPrices = Cache::remember('crypto_prices', $interval, function () {
-            return CryptoPrice::all();
-        });
+    /**
+     * @var CryptoPriceService $cryptoPriceService
+    */
+    protected CryptoPriceService $cryptoPriceService;
+
+    public function __construct(CryptoPriceService $cryptoPriceService)
+    {
+        $this->cryptoPriceService = $cryptoPriceService;
+    }
     
-        return response()->json([
-            'status' => 'success',
-            'data'   => $cryptoPrices,
-        ]);
+    public function index()
+    {
+        return $this->cryptoPriceService->getCryptoPrices();
     }
 }
