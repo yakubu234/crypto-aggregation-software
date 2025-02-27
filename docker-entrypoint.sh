@@ -1,5 +1,7 @@
 #!/bin/bash
 
+LOG_DIR="laravel/storage/logs"
+
 # starting the php fpm
 echo "Starting PHP FPM..."
 php-fpm &
@@ -23,6 +25,21 @@ php artisan migrate --force
 
 # Ensure storage is linked
 php artisan storage:link || true
+
+# Run migrations and seed
+echo "Creating log file for the scheduler...."
+if [ ! -e "$LOG_DIR/reverb.log" ]; then
+  touch "$LOG_DIR/reverb.log"
+fi
+
+if [ ! -e "$LOG_DIR/horizon.log" ]; then
+  touch "$LOG_DIR/horizon.log"
+fi
+
+if [ ! -e "$LOG_DIR/schedule.log" ]; then
+  touch "$LOG_DIR/schedule.log"
+fi
+
 # Wait for database to be ready
 echo "Waiting for MySQL to be ready..."
 until mysqladmin ping -h"$DB_HOST" --silent; do

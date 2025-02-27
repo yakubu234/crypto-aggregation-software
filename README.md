@@ -2,6 +2,17 @@
 
 ## Overview
 This project implements a cryptocurrency price aggregation system using Laravel, Laravel Queue (Redis), Supervisor, WebSockets (Laravel Reverb), and Laravel LiveWire. The system fetches cryptocurrency prices from multiple exchanges, computes the average price, stores the results in a database, and broadcasts the updates in real time via WebSockets.
+
+
+## Author
+Developed by Yakubu Abiola
+
+## a setup of this project to a cloud server now available at http://crypto.aob.com.ng(http://crypto.aob.com.ng)
+
+
+## How It Works Design decisions and trade-offs, Known issues or limitations and possible improvements
+For a detailed bussiness logict  of how this project works, please refer to the [How It Works](./HOW_IT_WORKS.md) section.
+
 ## Good news; The docker is now fully functional. (:
 ## Features
 - Configurable cryptocurrency pairs and exchanges.
@@ -29,13 +40,144 @@ the following packages are implemented in this project:
 - **Laravel Echo . the WS connection at the front end**
 - **Livewire. a template engine**
 
-## Installation
+
+## API Endpoints
+### Fetch Cryptocurrency Prices (REST API)
+**Endpoint:**
+```http
+GET /api/crypto-prices
+```
+
+**Response:**
+```json
+{
+    "status": "success",
+    "data": [
+        {
+            "symbol": "BTCUSDT",
+            "averagePrice": 45000.25,
+            "priceChange": 2.5,
+            "exchanges": ["binance", "mexc"],
+            "serverTime": "2025-02-23 12:34:56"
+        }
+    ]
+}
+```
+
+## WebSocket Events
+The WebSocket broadcasts cryptocurrency price updates on the `crypto-prices` channel.
+
+**Event:**
+```json
+{
+    "event": "CryptoPriceUpdated",
+    "data": {
+        "crypto": {
+            "BTCUSDT": {
+                "averagePrice": 45000.25,
+                "priceChange": 2.5,
+                "exchanges": ["binance", "mexc"],
+                "serverTime": "2025-02-23 12:34:56"
+            }
+        }
+    }
+}
+```
+
+
+## How It Works Design decisions and trade-offs, Known issues or limitations and possible improvements
+For a detailed bussiness logict  of how this project works, please refer to the [How It Works](./HOW_IT_WORKS.md) section.
+
+## Installation  & Running the Application with Docker
+cd into the project root directory:
+
+```sh
+# Clone the repository
+git clone https://github.com/yakubu234/crypto-aggregation-software.git
+cd crypto-aggregation-software
+
+
+# copying the enviromental varriables
+please ensure you .docker-env varriables are set. (note that this will be copied to replace .env) . check below for settings details.
+```
+
+```ini
+# Database Configuration setup required. you can make changes as you like.
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=root
+DB_PASSWORD=
+
+#higly recommemded to use same setting as below
+# Broadcating driver
+BROADCAST_CONNECTION=reverb
+BROADCAST_DRIVER=reverb
+
+FILESYSTEM_DISK=local
+
+CACHE_STORE=database
+CACHE_PREFIX=
+
+HORIZON_DOMAIN=localhost
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+
+MEMCACHED_HOST=127.0.0.1
+
+REDIS_CLIENT=phpredis
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+REVERB_PORT=8080
+REVERB_HOST=127.0.0.1
+REVERB_SCHEME=http
+REVERB_APP_ID=510578
+REVERB_APP_KEY=qhxbwgflshg1ufehgtt6
+REVERB_APP_SECRET=r4ejeattunzkaggtph9e
+
+CRYPTO_EXCHANGES=binance,mexc,kucoin,huobi,bybit #exchanges
+CRYPTO_PAIRS=BTC,ETH,ETHBTC,BTCUSDT,XRPBTC #pairs
+CRYPTO_FETCH_INTERVAL=60 #time interval for fetching ; i.e 60 seconds
+CRYPTO_API_KEY=3htbhru459te9ivgi959ure9 #free crypto api API KEY
+CRYPTO_API_URL=https://api.freecryptoapi.com/v1/getData
+```
+
+```sh
+# When you are done setting up the .docker-env (note that this will be copied to replace .env)
+Continue to run the docker images, by first building or using the one-liner command
+
+
+# build the images
+docker compose build
+
+# Start the application
+docker compose up
+
+[OR]
+
+# Start the application in deamon mode
+docker compose up -d
+
+
+# Once the Application is up visit the url below on your browser
+http://localhost:8080
+
+# To stop the application
+docker compose down
+```
+
+
+## Installation without dockerization
 Clone the repository and install dependencies:
 
 ```sh
 # Clone the repository
-git clone https://github.com/your-repository.git
-cd your-repository
+git clone https://github.com/yakubu234/crypto-aggregation-software.git
+cd crypto-aggregation-software
 
 # Install PHP dependencies
 composer install
@@ -140,33 +282,7 @@ php artisan serve
 npm run dev
 ```
 
-## Running the Application with Docker
-cd into the project root directory:
-
-```sh
-# build the images
-please ensure you .env varriables are set. refer to the section before this to learn more on env settings.
-
-# build the images
-docker compose build
-
-# Start the application
-docker compose up
-
-[OR]
-
-# Start the application in deamon mode
-docker compose up -d
-
-
-# Once the Application is up visit the url below on your browser
-http://localhost:8080
-
-# To stop the application
-docker compose down
-```
-
-## Running the Application
+## Running the Application with a bash script
 You can as well run below commands as a one liner at the root directory of the project to stat all neccessary services :
 
 ```sh
@@ -175,49 +291,6 @@ You can as well run below commands as a one liner at the root directory of the p
 
 # or this 
 bash start-services.sh
-```
-
-## API Endpoints
-### Fetch Cryptocurrency Prices (REST API)
-**Endpoint:**
-```http
-GET /api/crypto-prices
-```
-
-**Response:**
-```json
-{
-    "status": "success",
-    "data": [
-        {
-            "symbol": "BTCUSDT",
-            "averagePrice": 45000.25,
-            "priceChange": 2.5,
-            "exchanges": ["binance", "mexc"],
-            "serverTime": "2025-02-23 12:34:56"
-        }
-    ]
-}
-```
-
-## WebSocket Events
-The WebSocket broadcasts cryptocurrency price updates on the `crypto-prices` channel.
-
-**Event:**
-```json
-{
-    "event": "CryptoPriceUpdated",
-    "data": {
-        "crypto": {
-            "BTCUSDT": {
-                "averagePrice": 45000.25,
-                "priceChange": 2.5,
-                "exchanges": ["binance", "mexc"],
-                "serverTime": "2025-02-23 12:34:56"
-            }
-        }
-    }
-}
 ```
 
 ## Running Tests
@@ -241,6 +314,10 @@ php artisan test
    php artisan reverb:work --debug
    ```
 
+
+## How It Works Design decisions and trade-offs, Known issues or limitations and possible improvements
+For a detailed bussiness logict  of how this project works, please refer to the [How It Works](./HOW_IT_WORKS.md) section.
+
 ## Deployment Notes
 Kindly note that for better performances, it is encouraged to setup a supervisor for the backgroup processess, the configs below are list of the background tasks. 
 
@@ -261,15 +338,6 @@ stderr_logfile=/var/www/storage/logs/horizon.log
 stdout_logfile=/var/www/storage/logs/horizon.log
 ```
 
-Restart Supervisor:
-
-```sh
-sudo supervisorctl reread
-sudo supervisorctl update
-sudo supervisorctl start laravel-horizon:*
-```
-
-
 ### Supervisor Configuration Example for scheduler
 Create a configuration file `/etc/supervisor/conf.d/laravel-schedule.conf`:
 
@@ -282,15 +350,6 @@ autorestart=true
 stderr_logfile=/var/www/storage/logs/schedule.log
 stdout_logfile=/var/www/storage/logs/schedule.log
 ```
-
-Restart Supervisor:
-
-```sh
-sudo supervisorctl reread
-sudo supervisorctl update
-sudo supervisorctl start laravel-schedule:*
-```
-
 
 ### Supervisor Configuration Example for reverb
 Create a configuration file `/etc/supervisor/conf.d/laravel-reverb.conf`:
@@ -310,10 +369,15 @@ Restart Supervisor:
 ```sh
 sudo supervisorctl reread
 sudo supervisorctl update
-sudo supervisorctl start laravel-reverb:*
+sudo supervisorctl start all
 ```
 ## Author
 Developed by Yakubu Abiola
+
+
+## How It Works Design decisions and trade-offs, Known issues or limitations and possible improvements
+ 
+For a detailed bussiness logict  of how this project works, please refer to the [How It Works](./HOW_IT_WORKS.md) section.
 
 ## a setup of this project to a cloud server now available at http://crypto.aob.com.ng(http://crypto.aob.com.ng)
 
